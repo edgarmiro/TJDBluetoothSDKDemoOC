@@ -22,7 +22,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self setupNotify];
-    titleArray_ = @[@"抬手亮屏", @"久坐提醒", @"喝水提醒", @"摇一摇拍照", @"智能防丢"];
+    titleArray_ = @[@"Levanta la mano para iluminar", @"Recordatorio sedentario", @"Recordatorio de agua potable", @"Sacude una foto", @"Inteligente anti-perdida"];
     _table = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     _table.delegate = self;
     _table.dataSource = self;
@@ -37,10 +37,10 @@
 
 - (void)didSetWristbandWithSwitch:(BOOL)isSuccess {
     if (isSuccess) {
-        NSLog(@"修改开关设置成功");
+        NSLog(@"Modificar la configuración del interruptor con éxito");
     }
     else {
-        NSLog(@"修改开关设置失败");
+        NSLog(@"Modificación de la configuración del interruptor fallida");
     }
 }
 
@@ -51,7 +51,7 @@
 
 - (void)handleNotify:(NSNotification *)notify {
     if (notify.name == WristbandNotifyKeys.setOrRead_Switch) {
-        NSLog(@"读取开关设置完成");
+        NSLog(@"Se completó la configuración del interruptor de lectura");
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.table reloadData];
         });
@@ -131,7 +131,7 @@
     NSLog(@"isConnected %d", bleSelf.isConnected);
     if (bleSelf.isConnected) {
         [bleSelf setSwitchForWristband:bleSelf.functionSwitchModel];
-        // 修改后保存信息
+        // Guardar información después de la modificación
         [FunctionSwitchModel setModel:bleSelf.functionSwitchModel];
         [_table reloadData];
     }

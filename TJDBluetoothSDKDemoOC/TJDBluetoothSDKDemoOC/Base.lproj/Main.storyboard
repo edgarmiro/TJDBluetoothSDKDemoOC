@@ -30,12 +30,12 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="LTx-Mv-54l">
-                        <barButtonItem key="leftBarButtonItem" title="搜索" id="gxg-Wc-BWV">
+                        <barButtonItem key="leftBarButtonItem" title="Búsqueda" id="gxg-Wc-BWV">
                             <connections>
                                 <action selector="pressScan:" destination="BYZ-38-t0r" id="wYp-Pu-AIi"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="停止并清空" id="Gez-c5-g7O">
+                        <barButtonItem key="rightBarButtonItem" title="Parar y vaciar" id="Gez-c5-g7O">
                             <connections>
                                 <action selector="pressStop:" destination="BYZ-38-t0r" id="Bgy-FQ-4vf"/>
                             </connections>

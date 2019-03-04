@@ -32,7 +32,7 @@
     
     [self setupNotify];
     
-    //若手环有过滤条件，请填写相应厂商的过滤条件
+    //Si la pulsera tiene condiciones de filtrado, complete las condiciones de filtro del fabricante correspondiente.
 //    bleSelf.filterString = @"TJDR";
     [bleSelf setupManager];
     [WUAppManager setIsDebug:true];
@@ -44,7 +44,7 @@
         [bleSelf startFindBleDevices];
     }
     else {
-        NSLog(@"未打开蓝牙");
+        NSLog(@"Bluetooth no está encendido");
     }
 }
 
@@ -65,7 +65,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotify:) name:WristbandNotifyKeys.readyToWrite object:nil];
     
     
-    //全在子线程里处理，UI请回到主线程
+    //Todo procesado en el subproceso secundario, IU de nuevo al subproceso principal
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotify:) name:WristbandNotifyKeys.read_Sport object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotify:) name:WristbandNotifyKeys.read_All_Sport object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotify:) name:WristbandNotifyKeys.read_Sleep object:nil];
@@ -76,8 +76,8 @@
 
 - (void)handleNotify:(NSNotification *)notify {
     if (notify.name == WUBleManagerNotifyKeys.on) {
-        NSLog(@"蓝牙已经打开");
-        // 在这里可以进行重连，连接过就会连接上次保存的设备。
+        NSLog(@"Bluetooth está encendido");
+        // Aquí puede volver a conectarse y conectarse al último dispositivo guardado.
         if (bleSelf.activeModel.isBond) {
             [bleSelf reConnectDevice];
         }
@@ -95,48 +95,48 @@
     
     if (notify.name == WUBleManagerNotifyKeys.connected) {
         NSLog(@"WUBleManagerNotifyKeys.connected");
-        //连接之后保存连接设备信息
+        //Guardar la información del dispositivo conectado después de la conexión
         bleSelf.activeModel.isBond = true;
         [WUBleModel setModel:bleSelf.activeModel];
         FunctionViewController *vc = [[FunctionViewController alloc] init];
         [self.navigationController pushViewController:vc animated:true];
     }
     
-    //准备好之后，先获取设备信息
+    //Prepárese, obtenga primero la información del dispositivo
     if (notify.name == WristbandNotifyKeys.readyToWrite) {
-        //获取手环的基础信息
+        //Obtén la información básica de la pulsera.
         [bleSelf setLanguageForWristband];
         [bleSelf getBatteryForWristband];
         [bleSelf getDeviceInfoForWristband];
         [bleSelf getUserinfoForWristband];
-        // 给手环设置时间
+        // Establecer tiempo para la pulsera
         [bleSelf setTimeForWristband];
         
-        //然后同步手环的数据 。。。。。。
-        //先获取手环当前的记步
+        //Luego sincroniza los datos de la pulsera. . . . . .
+        //Obtener el paso actual de la pulsera primero
         [bleSelf getStepWith:0];
-        NSLog(@"同步数据开始，这里可以开始刷新UI动画");
+        NSLog(@"Comience a sincronizar datos, aquí puede comenzar a actualizar la animación de la interfaz de usuario");
     }
     
     if (notify.name == WristbandNotifyKeys.read_Sport) {
-        NSLog(@"%d 步, %d cal, %d m", (int)bleSelf.step, (int)bleSelf.cal, (int)bleSelf.distance);
-        //再获取手环的历史记步
+        NSLog(@"%d Paso, %d cal, %d m", (int)bleSelf.step, (int)bleSelf.cal, (int)bleSelf.distance);
+        //Consigue de nuevo la historia del brazalete.
         [bleSelf aloneGetStepWith:0];
     }
     
     if (notify.name == WristbandNotifyKeys.read_All_Sport) {
         StepModel *stepModel = notify.object;
-        // 最后一天睡眠
+        // Último día de sueño
         if (stepModel.day == 6) {
             if ((stepModel.indexCount == 0) || (stepModel.indexCount == stepModel.index + 1)) {
-                NSLog(@"同步历史记步完成");
-                //再同步当前睡眠
+                NSLog(@"Sincronización de la historia paso completado");
+                //Resincronizar el sueño actual
                 [bleSelf getSleepWith:0];
             }
         }
         else {
             if ((stepModel.indexCount == 0) || (stepModel.indexCount == stepModel.index + 1)) {
-                //再同步昨天的记步
+                //Resincroniza el paso de ayer.
                 [bleSelf aloneGetStepWith:stepModel.day + 1];
             }
         }
@@ -144,7 +144,7 @@
     
     if (notify.name == WristbandNotifyKeys.read_Sleep) {
         NSLog(@"%d", (int)bleSelf.sleep);
-        //再同步历史睡眠
+        //Resincronizar el sueño histórico
         [bleSelf aloneGetSleepWith:0];
     }
     
@@ -152,8 +152,8 @@
         SleepModel *model = notify.object;
         if (model.day == 6) {
             if (model.indexCount == 0) {
-                NSLog(@"没有睡眠数据");
-                //再同步历史心率
+                NSLog(@"No hay datos de sueño");
+                //Resincronizar el ritmo cardíaco histórico
                 [bleSelf aloneGetMeasure:WristbandMeasureType.heart];
             }
             else {
@@ -168,15 +168,15 @@
                     int wake = [detailSleepArray[0] intValue];
                     int light = [detailSleepArray[1] intValue];
                     int deep = [detailSleepArray[2] intValue];
-                    NSLog(@"同步历史睡眠完成：%d , %d , %d, day: %d", wake, light, deep, (int)model.day);
-                    //再同步历史心率
+                    NSLog(@"Sincronización historial de sueño completo：%d , %d , %d, day: %d", wake, light, deep, (int)model.day);
+                    //Resincronizar el ritmo cardíaco histórico
                     [bleSelf aloneGetMeasure:WristbandMeasureType.heart];
                 }
             }
         }
         else {
             if (model.indexCount == 0) {
-                NSLog(@"没有睡眠数据");
+                NSLog(@"No hay datos de sueño");
                 [bleSelf aloneGetSleepWith:model.day + 1];
             }
             else {
@@ -191,7 +191,7 @@
                     int wake = [detailSleepArray[0] intValue];
                     int light = [detailSleepArray[1] intValue];
                     int deep = [detailSleepArray[2] intValue];
-                    NSLog(@"同步历史睡眠完成：%d , %d , %d, day: %d", wake, light, deep, (int)model.day);
+                    NSLog(@"Sincronización historial de sueño completo：%d , %d , %d, day: %d", wake, light, deep, (int)model.day);
                     [bleSelf aloneGetSleepWith:model.day + 1];
                 }
             }
@@ -201,7 +201,7 @@
     if (notify.name == WristbandNotifyKeys.sysCeLiang_heart) {
         HeartModel *heartModel = notify.object;
         if ((heartModel.indexCount == 0) || (heartModel.indexCount == heartModel.index)) {
-            NSLog(@"同步历史心率完成，这里可以结束刷新数据");
+            NSLog(@"El ritmo cardíaco del historial de sincronización se completa, aquí puede finalizar los datos de actualización");
         }
     }
 }

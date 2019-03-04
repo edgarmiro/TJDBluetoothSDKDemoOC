@@ -25,7 +25,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     [self setupNotify];
-    titleArray_ = @[@"设备相关功能开关", @"心率测量（点击测量）", @"血压测量（点击测量）", @"修改用户信息"];
+    titleArray_ = @[@"Interruptor de función relacionado con el dispositivo", @"Medición de la frecuencia cardíaca (medición de clic)", @"Medición de la presión arterial (haga clic en la medición)", @"Modificar información del usuario"];
     
     _table = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     _table.delegate = self;
@@ -40,10 +40,10 @@
 
 - (void)didSetWristbandWithUserinfo:(BOOL)isSuccess {
     if (isSuccess) {
-        NSLog(@"修改用户信息成功");
+        NSLog(@"Modificar la información del usuario correctamente");
     }
     else {
-        NSLog(@"修改用户信息失败");
+        NSLog(@"Error al modificar la información del usuario");
     }
 }
 
@@ -60,7 +60,7 @@
 
 - (void)handleNotify:(NSNotification *)notify {
     
-    // 测量心率实时发送数据返回
+    // Medición de la frecuencia cardíaca, envío de datos en tiempo real.
     if (notify.name == WristbandNotifyKeys.devSendCeLiang_heart) {
         HeartModel *model = notify.object;
         _heartModel = model;
@@ -69,7 +69,7 @@
         });
     }
     
-    // 测量血压实时发送数据返回
+    // Medición de la presión arterial, envío de datos en tiempo real.
     if (notify.name == WristbandNotifyKeys.devSendCeLiang_blood) {
         BloodModel *model = notify.object;
         _bloodModel = model;
@@ -115,21 +115,21 @@
     }
     
     if (indexPath.row == 1) {
-        self.title = @"正在测量心率";
+        self.title = @"Medición de la frecuencia cardíaca";
         [bleSelf startMeasure:WristbandMeasureType.heart];
     }
     
     if (indexPath.row == 2) {
-        self.title = @"正在测量血压";
+        self.title = @"Medir la presión arterial";
         [bleSelf startMeasure:WristbandMeasureType.blood];
     }
     
     if (indexPath.row == 3) {
-        // 调试用来查看信息,该方法与功能无关
+        // La depuración se utiliza para ver información, que es independiente de la función
         [WUAppManager testPrint:bleSelf.userInfo];
         WUUserInfo *model = bleSelf.userInfo;
         model.sex = 1;
-        // 修改用户信息 然后发送给蓝牙设备
+        // Modifique la información del usuario y envíela al dispositivo Bluetooth
         [bleSelf setUserinfoForWristband:model];
     }
 }
